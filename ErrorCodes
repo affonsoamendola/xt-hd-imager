@@ -1,0 +1,26 @@
+ERROR CODES
+
+0x00 	Successful completion
+0x01 	Bad command
+0x02 	Address mark not found
+0x03 	Attempt to write to write-protected disk
+0x04 	Sector not found
+0x05 	Reset failed (hard disk)
+0x06 	Disk changed since last operation
+0x07 	Drive parameter activity failed
+0x08 	Direct memory access (DMA) overrun
+0x09 	Attempt to perform DMA across 64K
+0x0A 	Bad sector detected
+0x0B 	Bad track detected
+0x0C 	Usupported track
+0x11 	CRC/ECC corrected data error
+0x20 	Controller failure
+0x40 	Seek operation failed
+0x80 	Attachment failed to respond
+0xAA 	Drive not ready (hard disk)
+0xBB 	Undefined errror occurred (hard disk)
+0xCC 	Write fault occurred
+0xE0 	Status error
+0xFF 	Sense operation failed 
+
+https://digitalmars.com/rtl/bios.html
