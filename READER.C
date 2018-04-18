@@ -6,6 +6,32 @@
 
 #include <stdio.h>
 
+enum e_BiosDisk
+{
+	SUCCESS 				= 	0x00,
+	BADCOMMAND 				= 	0x01,
+	ADDRESSMARKNOTFOUND 	= 	0x02,
+	WRITEPROTECTED 			= 	0x03,
+	SECTORNOTFOUND 			= 	0x04,
+	RESETFAIL 				= 	0x05,
+	DISKCHANGED 			= 	0x06,
+	PARAMETERACTIVITYFAIL	=	0x07,
+	DMAOVERRUN				=	0x08,
+	ATTEMPTDMA64K			=	0x09,
+	BADSECTOR				=	0x0A,
+	BADTRACK				=	0x0B,
+	UNSUPPORTEDTRACK		=	0x0C,
+	CRCCORRECTEDDATAERROR	=	0x11,
+	CONTROLLERFAIL			=	0x20,
+	SEEKOPFAIL				=	0x40,
+	ATTACHMENTFAIL			=	0x80,
+	DRIVENOTREADY			=	0xAA,
+	UNDEFINEDERROR			=	0xBB,
+	WRITEFAULT				=	0xCC,
+	STATUSERROR				=	0xE0,
+	SENSEOPFAIL				=	0xFF
+};
+
 char * convertByteToHexCode(char c_input);
 
 int main()
@@ -34,7 +60,7 @@ int main()
 	for(i=0;i<512;i++)
 	{
 
-		c_buffer[i] = 10;
+		c_buffer[i] = 126;
 
 	}
 
