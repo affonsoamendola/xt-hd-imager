@@ -1,10 +1,10 @@
-#include <conio.h>
-#include <dos.h>
-#include <bios.h>
+//#include <conio.h>
+//#include <dos.h>
+//#include <bios.h>
 //Comment these three so that the code will compile on modern OS's, these should compile with Borland C++, Turbo C and the like, 
 //try with some 90s C compiler, it should work
 
-//#include <stdio.h>
+#include <stdio.h>
 
 char * convertByteToHexCode(char c_input);
 
@@ -43,8 +43,8 @@ int main()
 	printf(", TRACK %i",i_track);
 	printf(", SECTOR %i...\n\n",i_sector);
 
-	i_errorCode = biosdisk(2, i_disk, i_head, i_track, i_sector, 1, c_buffer));
-	//i_errorCode = 0;
+	//i_errorCode = biosdisk(2, i_disk, i_head, i_track, i_sector, 1, c_buffer));
+	i_errorCode = 0;
 
 	if(i_errorCode == 0)
 	{
@@ -61,12 +61,12 @@ int main()
 
 			}	
 
-			char c_hexcode[2];
-			c_hexcode[0] = *convertByteToHexCode(c_buffer[i]);
-			c_hexcode[1] = *convertByteToHexCode(c_buffer[i]);
+			char * c_hexcode[2];
+			c_hexcode[0] = convertByteToHexCode(c_buffer[i]);
+			c_hexcode[1] = convertByteToHexCode(c_buffer[i]);
 
-			printf("%c", c_hexcode[0]);
-			printf("%c ", c_hexcode[1]+1);
+			printf("%c", *c_hexcode[0]);
+			printf("%c ", *(c_hexcode[1]+1));
 		}
 	}
 	else
