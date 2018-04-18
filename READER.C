@@ -66,7 +66,7 @@ int main()
 			c_hexcode[1] = *convertByteToHexCode(c_buffer[i]);
 
 			printf("%c", c_hexcode[0]);
-			printf("%c ", c_hexcode[1]);
+			printf("%c ", c_hexcode[1]+1);
 		}
 	}
 	else
