@@ -76,6 +76,8 @@ int main()
 	printf(", SECTOR %i...\n\n",i_sector);
 
 	i_errorCode = biosdisk(i_cmd, i_disk, i_head, i_track, i_sector, 1, c_buffer);
+	//Comment  this line to compile in modern compilers
+	
 	//i_errorCode = 0;
 
 	if(i_errorCode == 0)
