@@ -5,6 +5,7 @@
 //try with some 90s C compiler, it should work
 
 #include <stdio.h>
+#include <stdlib.h>
 
 enum e_BiosDisk
 {
@@ -33,6 +34,7 @@ enum e_BiosDisk
 };
 
 char * convertByteToHexCode(char c_input);
+char * biosDiskError(int i_errNo);
 
 int main()
 {
@@ -66,7 +68,7 @@ int main()
 	for(i=0;i<512;i++)
 	{
 
-		c_buffer[i] = 126;
+		c_buffer[i] = 46;
 
 	}
 
@@ -75,10 +77,10 @@ int main()
 	printf(", TRACK %i",i_track);
 	printf(", SECTOR %i...\n\n",i_sector);
 
-	i_errorCode = biosdisk(i_cmd, i_disk, i_head, i_track, i_sector, 1, c_buffer);
+	//i_errorCode = biosdisk(i_cmd, i_disk, i_head, i_track, i_sector, 1, c_buffer);
 	//Comment  this line to compile in modern compilers
 	
-	//i_errorCode = 0;
+	i_errorCode = 8;
 
 	if(i_errorCode == 0)
 	{
@@ -105,9 +107,10 @@ int main()
 	}
 	else
 	{
-		printf("BIOSDISK() returned an error:\nERROR: %i", i_errorCode);
+		printf("BIOSDISK() returned an error:\nERROR: %i\n", i_errorCode);
+		printf(biosDiskError(i_errorCode));
+		printf("\n");
 	}
-	return 0;
 }
 
 char * convertByteToHexCode(char c_input)
@@ -141,3 +144,57 @@ char * convertByteToHexCode(char c_input)
 
 	return c_currentData;
 }
+
+char * biosDiskError(int i_errNo)
+{
+	switch(i_errNo)
+	{
+		case(0x00):
+			return "Successful completion";
+		case(0x01):
+			return "Bad command";
+		case(0x02):
+			return "Address mark not found";
+		case(0x03):
+			return "Attempt to write to write-protected disk";
+		case(0x04):
+			return "Sector not found";
+		case(0x05):
+			return "Reset failed (hard disk)";
+		case(0x06):
+			return "Disk changed since last operation";
+		case(0x07):
+			return "Drive parameter activity failed";
+		case(0x08):
+			return "Direct memory access (DMA) overrun";
+		case(0x09):
+			return "Attempt to perform DMA across 64K";
+		case(0x0A):
+			return "Bad sector detected";
+		case(0x0B):
+			return "Bad track detected";
+		case(0x0C):
+			return "Usupported track";
+		case(0x11):
+			return "CRC/ECC corrected data error";
+		case(0x20):
+			return "Controller failure";
+		case(0x40):
+			return "Seek operation failed";
+		case(0x80):
+			return "Attachment failed to respond";
+		case(0xAA):
+			return "Drive not ready (hard disk)";
+		case(0xBB):
+			return "Undefined errror occurred (hard disk)";
+		case(0xCC):
+			return "Write fault occurred";
+		case(0xE0):
+			return "Status error";
+		case(0xFF):
+			return "Sense operation failed";
+		default:
+			return "Unknown Error";
+	}
+}
+
