@@ -1,11 +1,11 @@
-//#include <conio.h>
-//#include <dos.h>
-//#include <bios.h>
+#include <conio.h>
+#include <dos.h>
+#include <bios.h>
 //Comment these three so that the code will compile on modern OS's, these should compile with Borland C++, Turbo C and the like, 
 //try with some 90s C compiler, it should work
 
-#include <stdio.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <stdlib.h>
 
 enum e_BiosDisk
 {
@@ -54,6 +54,9 @@ int main()
 
 	char * c_hexcode;
 
+	printf("Initializing serial comms....\n");
+	bioscom(0,0,224|3|0|0);
+
 	printf("Enter command number:\n");
 	scanf("%i", &i_cmd);
 	printf("Enter number of the disk to read:\n");
@@ -77,24 +80,29 @@ int main()
 	printf(", TRACK %i",i_track);
 	printf(", SECTOR %i...\n\n",i_sector);
 
-	//i_errorCode = biosdisk(i_cmd, i_disk, i_head, i_track, i_sector, 1, c_buffer);
+	i_errorCode = biosdisk(i_cmd, i_disk, i_head, i_track, i_sector, 1, c_buffer);
 	//Comment  this line to compile in modern compilers
 	
-	i_errorCode = 8;
+	//i_errorCode = 8;
 
 	if(i_errorCode == 0)
 	{
 		j = 0;
 
+		//Send data to serial port
+		for(i=0; i<512; i++)
+		{
+			bioscom(1,0,c_buffer[i]);
+		}
+
+		//Print contents on screen
 		for(i=0;i<512; i++,j++)
 		{
-
 			if(j > 23)
 			{
 				//Making pretty columns
 				printf("\n");
 				j=0;
-
 			}	
 
 			c_hexcode = convertByteToHexCode(c_buffer[i]);
