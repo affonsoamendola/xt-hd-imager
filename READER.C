@@ -48,14 +48,17 @@ int main()
 	int i_nsec;
 
 	int i_errorCode;
+	char c_serialConfig;
 
 	int i;
 	int j;
 
 	char * c_hexcode;
 
+	c_serialConfig = 224|3|0|0;
+
 	printf("Initializing serial comms....\n");
-	bioscom(0,0,224|3|0|0);
+	printf("Status:%u\n",bioscom(0,c_serialConfig,0));
 
 	printf("Enter command number:\n");
 	scanf("%i", &i_cmd);
@@ -92,7 +95,7 @@ int main()
 		//Send data to serial port
 		for(i=0; i<512; i++)
 		{
-			bioscom(1,0,c_buffer[i]);
+			printf("%u", bioscom(1,c_buffer[i],0));
 		}
 
 		//Print contents on screen
