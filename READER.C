@@ -89,11 +89,11 @@ int main()
 			for(s=1; s<i_sector+1;s++)
 			{
 				printf("\nREADING DISK %i",i_disk);
-				printf(", HEAD %i",i_head);
-				printf(", TRACK %i",i_track);
-				printf(", SECTOR %i...\n\n",i_sector);
+				printf(", HEAD %i",h);
+				printf(", TRACK %i",t);
+				printf(", SECTOR %i...\n\n",s);
 
-				i_errorCode = biosdisk(i_cmd, i_disk, i_head, i_track, i_sector, 1, c_buffer);
+				i_errorCode = biosdisk(i_cmd, i_disk, h, t, s, 1, c_buffer);
 				//Comment  this line to compile in modern compilers
 				
 				//i_errorCode = 8;
