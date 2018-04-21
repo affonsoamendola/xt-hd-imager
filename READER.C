@@ -53,6 +53,10 @@ int main()
 	int i;
 	int j;
 
+	int t;
+	int s;
+	int h;
+
 	char * c_hexcode;
 
 	c_serialConfig = 224|3|0|0;
@@ -64,11 +68,11 @@ int main()
 	scanf("%i", &i_cmd);
 	printf("Enter number of the disk to read:\n");
 	scanf("%i", &i_disk);
-	printf("Enter number of the head to read:\n");
+	printf("Enter number of the heads to read:\n");
 	scanf("%i", &i_head);
-	printf("Enter number of the track to read:\n");
+	printf("Enter number of the tracks to read:\n");
 	scanf("%i", &i_track);
-	printf("Enter number of the sector to read:\n");
+	printf("Enter number of the sectors to read:\n");
 	scanf("%i", &i_sector);
 
 	for(i=0;i<512;i++)
@@ -78,49 +82,58 @@ int main()
 
 	}
 
-	printf("\nREADING DISK %i",i_disk);
-	printf(", HEAD %i",i_head);
-	printf(", TRACK %i",i_track);
-	printf(", SECTOR %i...\n\n",i_sector);
-
-	i_errorCode = biosdisk(i_cmd, i_disk, i_head, i_track, i_sector, 1, c_buffer);
-	//Comment  this line to compile in modern compilers
-	
-	//i_errorCode = 8;
-
-	if(i_errorCode == 0)
+	for(h=0; h<i_head; h++)
 	{
-		j = 0;
-
-		//Send data to serial port
-		for(i=0; i<512; i++)
+		for(t=0; t<i_track;t++)
 		{
-			printf("%u", bioscom(1,c_buffer[i],0));
-		}
-
-		//Print contents on screen
-		for(i=0;i<512; i++,j++)
-		{
-			if(j > 23)
+			for(s=1; s<i_sector+1;s++)
 			{
-				//Making pretty columns
-				printf("\n");
-				j=0;
-			}	
+				printf("\nREADING DISK %i",i_disk);
+				printf(", HEAD %i",i_head);
+				printf(", TRACK %i",i_track);
+				printf(", SECTOR %i...\n\n",i_sector);
 
-			c_hexcode = convertByteToHexCode(c_buffer[i]);
+				i_errorCode = biosdisk(i_cmd, i_disk, i_head, i_track, i_sector, 1, c_buffer);
+				//Comment  this line to compile in modern compilers
+				
+				//i_errorCode = 8;
 
-			printf("%c", c_hexcode[0]);
-			printf("%c ", c_hexcode[1]);
+				if(i_errorCode == 0)
+				{
+					j = 0;
 
-			free(c_hexcode);
+					//Send data to serial port
+					for(i=0; i<512; i++)
+					{
+						bioscom(1,c_buffer[i],0);
+					}
+
+					//Print contents on screen
+					for(i=0;i<512; i++,j++)
+					{
+						if(j > 23)
+						{
+							//Making pretty columns
+							printf("\n");
+							j=0;
+						}	
+
+						c_hexcode = convertByteToHexCode(c_buffer[i]);
+
+						printf("%c", c_hexcode[0]);
+						printf("%c ", c_hexcode[1]);
+
+						free(c_hexcode);
+					}
+				}
+				else
+				{
+					printf("BIOSDISK() returned an error:\nERROR: %i\n", i_errorCode);
+					printf(biosDiskError(i_errorCode));
+					printf("\n");
+				}
+			}
 		}
-	}
-	else
-	{
-		printf("BIOSDISK() returned an error:\nERROR: %i\n", i_errorCode);
-		printf(biosDiskError(i_errorCode));
-		printf("\n");
 	}
 }
 
