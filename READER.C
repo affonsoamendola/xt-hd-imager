@@ -58,6 +58,7 @@ int main()
 	int h;
 
 	char * c_hexcode;
+	char c_answer;
 
 	c_serialConfig = 224|3|0|0;
 
@@ -81,6 +82,29 @@ int main()
 		c_buffer[i] = 46;
 
 	}
+
+	if(i_cmd == 3 or i_cmd == 11 or i_cmd == 15)
+	{
+		printf("You're trying to write some sector(s), this might overwrite stuff and might mess up your data, only do this if you're absolutely sure of what you're doing.\n");
+		printf("Do you wish to continue? (Y or N)\n");
+		scanf("%c", &c_answer);
+		if(c_answer != 'Y' or c_answer != 'y')
+		{
+			return 0;
+		}
+	}
+
+	if(i_cmd == 5 or i_cmd == 6 or i_cmd == 7)
+	{
+		printf("You're trying to format something, this might overwrite stuff and might mess up your data, only do this if you're absolutely sure of what you're doing.\n");
+		printf("Do you wish to continue? (Y or N)\n");
+		scanf("%c", &c_answer);
+		if(c_answer != 'Y' or c_answer != 'y')
+		{
+			return 0;
+		}
+	}
+
 
 	for(h=0; h<i_head; h++)
 	{
