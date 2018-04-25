@@ -50,6 +50,8 @@ int main()
 	int i_errorCode;
 	char c_serialConfig;
 
+	int i_useSerial;
+
 	int i;
 	int j;
 
@@ -62,8 +64,22 @@ int main()
 
 	c_serialConfig = 224|3|0|0;
 
-	printf("Initializing serial comms....\n");
-	printf("Status:%u\n",bioscom(0,c_serialConfig,0));
+	printf("Use serial comms? (Y or N)\n");
+	scanf("%c", c_answer);
+	if(c_answer == 'Y' || c_answer == 'y')
+	{
+		i_useSerial = 1;
+	}
+	else
+	{
+		i_useSerial = 0;
+	}
+
+	if(i_useSerial == 1)
+	{
+		printf("Initializing serial comms....\n");
+		printf("Status:%u\n",bioscom(0,c_serialConfig,0));
+	}
 
 	printf("Enter command number:\n");
 	scanf("%i", &i_cmd);
@@ -126,13 +142,15 @@ int main()
 				{
 					j = 0;
 
-					/*Send data to serial port*/
-					for(i=0; i<512; i++)
+					if(i_useSerial == 1)
 					{
-						/*bioscom(1,c_buffer[i],0);*/
-						/*biosCom expects something to read the actual info sent, so if there is nothing connected and receiving data, the software will hang here, beware*/
+						/*Send data to serial port*/
+						for(i=0; i<512; i++)
+						{
+							bioscom(1,c_buffer[i],0);
+							/*biosCom expects something to read the actual info sent, so if there is nothing connected and receiving data, the software will hang here, beware*/
+						}	
 					}
-
 					/*Print contents on screen*/
 					for(i=0;i<512; i++,j++)
 					{
