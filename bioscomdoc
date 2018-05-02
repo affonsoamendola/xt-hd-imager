@@ -1,0 +1,114 @@
+ bioscom()               Communications I/O
+
+ #include   <bios.h>
+
+ int        bioscom(cmd,byte,port);
+ int        cmd;                         Operation to perform
+ char       byte;                        Bits to set communications port
+ int        port;                        Specified I/O port
+
+    Using BIOS interrupt 0x14, bioscom() carries out RS232
+    communications, using the connection specified by 'port' (0 = COM1, 1
+    = COM2, and so on).  'cmd' and 'byte' specify the type of action and
+    the communications parameters.
+
+    'cmd' can be one of the following:
+
+           0    To set communications parameters to the value specified
+                in 'byte'.
+           1    To send the character in 'byte'.
+           2    To receive a character.
+           3    To get the current status of 'port'.
+
+    'byte' is the result of "or"ing one value from each of these four
+    groups. The bit settings represent the following:
+
+                0x02     7 data bits
+                0x03     8 data bits
+
+                0x00     1 stop bit
+                0x04     2 stop bits
+
+                0x00     No parity
+                0x08     Odd parity
+                0x18     Even parity
+
+                0x00     110 baud
+                0x20     150 baud
+                0x40     300 baud
+                0x60     600 baud
+                0x80     1200 baud
+                0xA0     2400 baud
+                0xC0     4800 baud
+                0xE0     9600 baud
+
+    Therefore, the value 0x9B in 'byte' (0x80 | 0x18 | 0x00 | 0x03) sets
+    the communications port to 1200 baud, even parity, 1 stop bit, and 8
+    data bits.
+
+       Returns:     A 16-bit integer.
+
+         Notes:     Regardless of the value of 'cmd', the upper 8 bits of
+                    the return value are status bits:
+
+                bit 15   Time out
+                bit 14   Transmit shift register empty
+                bit 13   Transmit holding register empty
+                bit 12   Break detect
+                bit 11   Framing error
+                bit 10   Parity error
+                bit 9    Overrun error
+                bit 8    Data ready
+
+                Depending on the value of 'cmd', the value of the lower 8
+                bits of the return value varies:
+
+                If 'cmd' is 1 (send a character) and bit 15 is set: The
+                value in 'byte' could not be transmitted. If bit 15 is
+                not set, the rest of the upper and lower bits are set
+                appropriately.
+
+                If 'cmd' is 2 (read a character) and none of the upper
+                bits are set: The byte read is in the lower 8 bits of the
+                return value.
+
+                If 'cmd' is 0 or 3 (set parameters or return status): The
+                upper bits are set as described.  The lower bits have the
+                following meanings:
+
+                bit 7    Received line signal detect
+                bit 6    Ring indicator
+                bit 5    Data set ready
+                bit 4    Clear to send
+                bit 3    Delta receive line signal detector
+                bit 2    Trailing edge ring detector
+                bit 1    Delta data set ready
+                bit 0    Delta clear to send
+
+   Portability:     IBM PC and compatibles only.
+
+   -------------------------------- Example ---------------------------------
+
+    The following statements set the RS232 port COM2 to 1200 baud, 8 data
+    bits, 1 stop bit and even parity.  Next it attempts to receive a byte
+    from COM2, and then send the value 0xAA on COM2.
+
+           #include <stdio.h>      /* for 'printf' */
+           #include <bios.h>       /* for 'bioscom' */
+
+           #define PORT_COM2 1
+
+           main()
+           {
+               int result;
+
+               bioscom(0,0x80|0x18|0x00|0x03,PORT_COM2);   /* set COM2 *
+               result = bioscom(2,0,PORT_COM2);            /* receive byte */
+               printf("%x read from COM2, status bits = %x\n",
+                       result & 0xFF,result & 0xFF00);
+               result = bioscom(1,0xAA,PORT_COM2);         /* send 0xAA
+           */  if (result & 0x8000)
+                   printf("unable to send");
+           }
+
+
