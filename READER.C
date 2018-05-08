@@ -1,11 +1,11 @@
 #include <conio.h>
 #include <dos.h>
 #include <bios.h>
-//Comment these three so that the code will compile on modern OS's, these should compile with Borland C++, Turbo C and the like, 
-//try with some 90s C compiler, it should work
+/*Comment these three so that the code will compile on modern OS's, these should compile with Borland C++, Turbo C and the like,*/
+/*try with some 90s C compiler, it should work*/
 
-//#include <stdio.h>
-//#include <stdlib.h>
+/*#include <stdio.h>                         */
+/*#include <stdlib.h>                        */
 
 enum e_BiosDisk
 {
@@ -50,6 +50,8 @@ int main()
 	int i_errorCode;
 	char c_serialConfig;
 
+	int i_useSerial;
+
 	int i;
 	int j;
 
@@ -58,12 +60,27 @@ int main()
 	int h;
 
 	char * c_hexcode;
+	char c_answer;
 
-	c_serialConfig = 224|3|0|0;
+	printf("Use serial Comms? (Y or N)");
+	scanf("%c", &c_answer);
 
-	printf("Initializing serial comms....\n");
-	printf("Status:%u\n",bioscom(0,c_serialConfig,0));
+	if(c_answer == 'Y' || c_answer == 'y')
+	{
+		i_useSerial = 1;
+	}
+	else
+	{
+		i_useSerial = 0;
+	}
 
+	if(i_useSerial == 1)
+	{
+		c_serialConfig = 224|3|0|0;
+
+		printf("Initializing serial comms....\n");
+		printf("Status:%u\n",bioscom(0,c_serialConfig,0));
+	}
 	printf("Enter command number:\n");
 	scanf("%i", &i_cmd);
 	printf("Enter number of the disk to read:\n");
@@ -82,6 +99,29 @@ int main()
 
 	}
 
+	if(i_cmd == 3 || i_cmd == 11 || i_cmd == 15)
+	{
+		printf("You're trying to write some sector(s), this might overwrite stuff and might mess up your data, only do this if you're absolutely sure of what you're doing.\n");
+		printf("Do you wish to continue? (Y or N)\n");
+		scanf("%c", &c_answer);
+		if(c_answer != 'Y' || c_answer != 'y')
+		{
+			return 0;
+		}
+	}
+
+	if(i_cmd == 5 || i_cmd == 6 || i_cmd == 7)
+	{
+		printf("You're trying to format something, this might overwrite stuff and might mess up your data, only do this if you're absolutely sure of what you're doing.\n");
+		printf("Do you wish to continue? (Y or N)\n");
+		scanf("%c", &c_answer);
+		if(c_answer != 'Y' || c_answer != 'y')
+		{
+			return 0;
+		}
+	}
+
+
 	for(h=0; h<i_head; h++)
 	{
 		for(t=0; t<i_track;t++)
@@ -94,29 +134,37 @@ int main()
 				printf(", SECTOR %i...\n\n",s);
 
 				i_errorCode = biosdisk(i_cmd, i_disk, h, t, s, 1, c_buffer);
-				//Comment  this line to compile in modern compilers
-				
+				printf("%i", i_errorCode);
+				/*Comment  this line to compile in modern compilers
+
 				//i_errorCode = 8;
+				*/
 
 				if(i_errorCode == 0)
 				{
 					j = 0;
 
-					//Send data to serial port
+					/*Send data to serial port
+					*/
 					for(i=0; i<512; i++)
 					{
-						bioscom(1,c_buffer[i],0);
+						if(i_useSerial == 1)
+						{
+							bioscom(1,c_buffer[i],0);
+						}
 					}
 
-					//Print contents on screen
+					/*Print contents on screen
+					*/
 					for(i=0;i<512; i++,j++)
 					{
 						if(j > 23)
 						{
-							//Making pretty columns
+							/*Making pretty columns
+							*/
 							printf("\n");
 							j=0;
-						}	
+						}
 
 						c_hexcode = convertByteToHexCode(c_buffer[i]);
 
@@ -140,30 +188,39 @@ int main()
 char * convertByteToHexCode(char c_input)
 {
 	static char * c_currentData;
-	//Converting Raw data into readable hex codes
+	/*Converting Raw data into readable hex codes
+
+	*/
 	c_currentData = malloc(2);
 
 	c_currentData[0]= c_input & 0xf0;
-	//Masking with 11110000, returning XXXX0000
+	/*Masking with 11110000, returning XXXX0000
+	*/
 	c_currentData[0]= c_currentData[0] >> 4;
 	c_currentData[0]= c_currentData[0] & 0x0f;
-	//Shifting bits to the right, returning 0000XXXX
+	/*shifting bits to the right, returning 0000XXXX
+	*/
 	c_currentData[0]= c_currentData[0]+48;
-	//Adding 48 to place the characters on the right point of the ascii table
+	/*Adding 48 to place the characters on the right point of the ascii table
+	*/
 	if(c_currentData[0] > 57)
 	{
 		c_currentData[0]= c_currentData[0]+7;
-		//Add 7 to skip the punctuations on the ascii table and get to A B C, etc
+		/*Add 7 to skip the punctuations on the ascii table and get to A B C, etc
+		*/
 	}
 
 	c_currentData[1]= c_input & 0x0f;
-	//Masking with 00001111 returning only 0000XXXX
+	/*Masking with 00001111 returning only 0000XXXX
+	*/
 	c_currentData[1]= c_currentData[1] + 48;
-	//Adding 48 to place the characters on the right point of the ascii table
+	/*Adding 48 to place the characters on the right point of the ascii table
+	*/
 	if(c_currentData[1] > 57)
 	{
 		c_currentData[1]= c_currentData[1] + 7;
-		//Add 7 to skip the punctuations on the ascii table and get to A B C, etc
+		/*Add 7 to skip the punctuations on the ascii table and get to A B C, etc
+		*/
 	}
 
 	return c_currentData;
@@ -222,3 +279,4 @@ char * biosDiskError(int i_errNo)
 	}
 }
 
+
