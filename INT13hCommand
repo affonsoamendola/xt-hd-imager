@@ -1,0 +1,24 @@
+0 - reset disk subsystem
+1 - get status of last operation (see _bios_disk, for possible values)
+2 - read one or more sectors
+3 - write one or more sectors
+5 - format a track
+6 - format a cylinder and set bad sector flag
+7 - format drive from specified cylinder
+8 - get drive parameters
+9 - initialize drive parameters
+10 - read long sectors
+11 - write long sectors
+12 - seek to cylinder
+13 - alternate fixed disk reset
+14 - read sector buffer
+15 - write sector buffer
+16 - test for drive ready
+17 - recalibrate drive
+18 - controller RAM diagnostic
+19 - controller drive diagnostic
+20 - controller internal diagnostic
+21 - get DASD type
+22 - read disk change line status
+23 - set DASD type (pass DASD code in nsects)
+24 - set media type for format
