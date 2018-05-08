@@ -1,11 +1,11 @@
 #include <conio.h>
 #include <dos.h>
 #include <bios.h>
-/*Comment these three so that the code will compile on modern OS's, these should compile with Borland C++, Turbo C and the like, */
+/*Comment these three so that the code will compile on modern OS's, these should compile with Borland C++, Turbo C and the like,*/
 /*try with some 90s C compiler, it should work*/
 
-/*#include <stdio.h>*/
-/*#include <stdlib.h>*/
+/*#include <stdio.h>                         */
+/*#include <stdlib.h>                        */
 
 enum e_BiosDisk
 {
@@ -62,10 +62,9 @@ int main()
 	char * c_hexcode;
 	char c_answer;
 
-	c_serialConfig = 224|3|0|0;
+	printf("Use serial Comms? (Y or N)");
+	scanf("%c", &c_answer);
 
-	printf("Use serial comms? (Y or N)\n");
-	scanf("%c", c_answer);
 	if(c_answer == 'Y' || c_answer == 'y')
 	{
 		i_useSerial = 1;
@@ -77,10 +76,11 @@ int main()
 
 	if(i_useSerial == 1)
 	{
+		c_serialConfig = 224|3|0|0;
+
 		printf("Initializing serial comms....\n");
 		printf("Status:%u\n",bioscom(0,c_serialConfig,0));
 	}
-
 	printf("Enter command number:\n");
 	scanf("%i", &i_cmd);
 	printf("Enter number of the disk to read:\n");
@@ -134,32 +134,37 @@ int main()
 				printf(", SECTOR %i...\n\n",s);
 
 				i_errorCode = biosdisk(i_cmd, i_disk, h, t, s, 1, c_buffer);
-				/*Comment  this line to compile in modern compilers*/
-				
-				/*i_errorCode = 8;*/
+				printf("%i", i_errorCode);
+				/*Comment  this line to compile in modern compilers
+
+				//i_errorCode = 8;
+				*/
 
 				if(i_errorCode == 0)
 				{
 					j = 0;
 
-					if(i_useSerial == 1)
+					/*Send data to serial port
+					*/
+					for(i=0; i<512; i++)
 					{
-						/*Send data to serial port*/
-						for(i=0; i<512; i++)
+						if(i_useSerial == 1)
 						{
 							bioscom(1,c_buffer[i],0);
-							/*biosCom expects something to read the actual info sent, so if there is nothing connected and receiving data, the software will hang here, beware*/
-						}	
+						}
 					}
-					/*Print contents on screen*/
+
+					/*Print contents on screen
+					*/
 					for(i=0;i<512; i++,j++)
 					{
 						if(j > 23)
 						{
-							/*Making pretty columns*/
+							/*Making pretty columns
+							*/
 							printf("\n");
 							j=0;
-						}	
+						}
 
 						c_hexcode = convertByteToHexCode(c_buffer[i]);
 
@@ -183,30 +188,39 @@ int main()
 char * convertByteToHexCode(char c_input)
 {
 	static char * c_currentData;
-	/*Converting Raw data into readable hex codes*/
+	/*Converting Raw data into readable hex codes
+
+	*/
 	c_currentData = malloc(2);
 
 	c_currentData[0]= c_input & 0xf0;
-	/*Masking with 11110000, returning XXXX0000*/
+	/*Masking with 11110000, returning XXXX0000
+	*/
 	c_currentData[0]= c_currentData[0] >> 4;
 	c_currentData[0]= c_currentData[0] & 0x0f;
-	/*Shifting bits to the right, returning 0000XXXX*/
+	/*shifting bits to the right, returning 0000XXXX
+	*/
 	c_currentData[0]= c_currentData[0]+48;
-	/*Adding 48 to place the characters on the right point of the ascii table*/
+	/*Adding 48 to place the characters on the right point of the ascii table
+	*/
 	if(c_currentData[0] > 57)
 	{
 		c_currentData[0]= c_currentData[0]+7;
-		/*Add 7 to skip the punctuations on the ascii table and get to A B C, etc*/
+		/*Add 7 to skip the punctuations on the ascii table and get to A B C, etc
+		*/
 	}
 
 	c_currentData[1]= c_input & 0x0f;
-	/*Masking with 00001111 returning only 0000XXXX*/
+	/*Masking with 00001111 returning only 0000XXXX
+	*/
 	c_currentData[1]= c_currentData[1] + 48;
-	/*Adding 48 to place the characters on the right point of the ascii table*/
+	/*Adding 48 to place the characters on the right point of the ascii table
+	*/
 	if(c_currentData[1] > 57)
 	{
 		c_currentData[1]= c_currentData[1] + 7;
-		/*Add 7 to skip the punctuations on the ascii table and get to A B C, etc*/
+		/*Add 7 to skip the punctuations on the ascii table and get to A B C, etc
+		*/
 	}
 
 	return c_currentData;
@@ -264,3 +278,5 @@ char * biosDiskError(int i_errNo)
 			return "Unknown Error";
 	}
 }
+
+
